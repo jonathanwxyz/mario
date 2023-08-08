@@ -27,7 +27,7 @@ echo "$text" | grep -Eo \
 	'(https?|ftp|file|gopher|mailto|news|nntp|telnet|wais|prospero)://[a-zA-Z0-9_@\-]+([.:][a-zA-Z0-9_@\-]+)*/?[a-zA-Z0-9_?,%#~&/+=-]+([:.][a-zA-Z0-9_?,%#~&/+=-]+)*' && \
 	($BROWSER $text 2>/dev/null || firefox $text) && exit
 
-# Multiple words search on internet
+# Multiple words search on search engine
 echo "$text" | grep -Eo \
 	'[a-zA-Z]+\s[a-zA-Z\s]*' && \
 	( $BROWSER "https://duckduckgo.com/?q=$text" 2>/dev/null || \
