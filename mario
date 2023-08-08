@@ -9,7 +9,37 @@ trim() {
     printf '%s' "$var"
 }
 
+if command -v wl-paste || echo FALSE; then
+	text=`wl-paste --primary`
+	text=`trim $text`
+elif command -v xclip || echo FALSE; then
+	text=`xclip -o`
+	text=`trim $text`
+else
+	echo "Error: Must have wl-paste or xclip installed... Exiting..."
+	exit 1
+fi
 
-text=`wl-paste --primary`
+echo "$text"
 
-web $text
+# Open URLs in browser
+echo "$text" | grep -Eo \
+	'(https?|ftp|file|gopher|mailto|news|nntp|telnet|wais|prospero)://[a-zA-Z0-9_@\-]+([.:][a-zA-Z0-9_@\-]+)*/?[a-zA-Z0-9_?,%#~&/+=-]+([:.][a-zA-Z0-9_?,%#~&/+=-]+)*' && \
+	($BROWSER $text 2>/dev/null || firefox $text) && exit
+
+# Multiple words search on internet
+echo "$text" | grep -Eo \
+	'[a-zA-Z]+\s[a-zA-Z\s]*' && \
+	( $BROWSER "https://duckduckgo.com/?q=$text" 2>/dev/null || \
+	 firefox "https://duckduckgo.com/?q=$text" ) && exit
+
+# Single words look up in dictionary
+echo "$text" | grep -Eo \
+	'^[a-zA-Z]+$' && \
+	( $BROWSER "https://www.dictionary.com/browse/$text" 2>/dev/null || \
+	 firefox "https://www.dictionary.com/browse/$text" ) && exit
+
+# File xdg-open
+xdg-open $text && exit
+
+exit 1
